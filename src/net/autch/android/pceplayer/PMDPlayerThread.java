@@ -7,6 +7,10 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 
 public class PMDPlayerThread extends Thread implements AudioTrack.OnPlaybackPositionUpdateListener {
+	private static final int BYTES_PER_BLOCK = 128 * 2;
+	private static final int BLOCKS_AT_ONCE = 256;
+	private static final int WAIT_PER_BLOCK = 250;
+	
 	private final AudioTrack track;
 	private boolean terminate;
 	private final byte[] buffer;
@@ -23,9 +27,9 @@ public class PMDPlayerThread extends Thread implements AudioTrack.OnPlaybackPosi
 
 	public PMDPlayerThread() {
 		track = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_CONFIGURATION_MONO,
-				AudioFormat.ENCODING_PCM_16BIT,	128 * 2 * 256, AudioTrack.MODE_STREAM);
+				AudioFormat.ENCODING_PCM_16BIT,	BYTES_PER_BLOCK * BLOCKS_AT_ONCE, AudioTrack.MODE_STREAM);
 		terminate = false;
-		buffer = new byte[128 * 2 * 256];
+		buffer = new byte[BYTES_PER_BLOCK * BLOCKS_AT_ONCE];
 		muslib_init();
 	}
 
@@ -48,9 +52,10 @@ public class PMDPlayerThread extends Thread implements AudioTrack.OnPlaybackPosi
 		track.play();
 		while(!terminate) {
 			try {
-				muslib_render(buffer, buffer.length);
+				int ret = muslib_render(buffer, buffer.length);
+				if(ret == 0) break;
 				track.write(buffer, 0, buffer.length);
-				Thread.sleep(250);
+				Thread.sleep(WAIT_PER_BLOCK);
 			} catch (InterruptedException e) {
 				// thru
 			}

@@ -33,10 +33,13 @@ JNIEXPORT jint JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1
   (JNIEnv *env, jclass klass, jbyteArray jbuffer, jint size)
 {
 	jbyte* buffer = (*env)->GetByteArrayElements(env, jbuffer, NULL);
+	jint ret;
 
-	muslib_render(buffer, size);
+	ret = muslib_render(buffer, size);
 
 	(*env)->ReleaseByteArrayElements(env, jbuffer, buffer, 0);
+
+	return ret;
 }
 
 JNIEXPORT void JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1close
