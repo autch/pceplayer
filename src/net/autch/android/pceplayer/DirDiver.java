@@ -3,6 +3,7 @@ package net.autch.android.pceplayer;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DirDiver {
 	private final File root;
@@ -40,7 +41,9 @@ public class DirDiver {
 	
 	private void dirDiver(File pivot) {
 		ArrayList<File> dirs = new ArrayList<File>();
-		for(File f : pivot.listFiles(filter)) {
+		File[] files = pivot.listFiles(filter);
+		Arrays.sort(files);
+		for(File f : files) {
 			if(f.toString().equals("..") || f.toString().equals("."))
 				continue;
 			if(f.isDirectory()) {
