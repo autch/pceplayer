@@ -1,55 +1,61 @@
 package net.autch.android.pceplayer;
 
-import java.io.IOException;
-
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.widget.MediaController;
+import android.os.IBinder;
+import android.util.Log;
+import android.view.SurfaceView;
 import android.widget.TextView;
 
 public class PlayingView extends Activity {
-	private PMDPlayerThread thread;
-	private String filename;
+	private static final String TAG = "PlayingView";
+
+	private SurfaceView sv;
+	private PMDPlayerService player;
+
+	private final ServiceConnection connection = new ServiceConnection() {
+		public void onServiceDisconnected(ComponentName name) {
+			Log.d(TAG, "onServiceDisconnected");
+			player = null;
+		}
+
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			Log.d(TAG, "onServiceConnected");
+			player = ((PMDPlayerService.PMDPlayerServiceBinder)service).getService();
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		MediaController mc = new MediaController(this);
-
 		TextView text = (TextView)findViewById(R.id.TextView01);
-		mc.setAnchorView(text.getRootView());
-		text.setText(getIntent().getStringExtra("title"));
-		
-		filename = getIntent().getStringExtra("filename");
+		sv = (SurfaceView)findViewById(R.id.surface);
+		//text.setText(player.getTitle());
 	}
 
-	private void startSong() {
-		if(thread != null) stopSong();
-		thread = new PMDPlayerThread();
-		try {
-			thread.open(filename);
-			thread.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void stopSong() {
-		thread.terminate();
-		thread = null;
-	}
-	
 	@Override
 	protected void onPause() {
 		super.onPause();
-		stopSong();
+		unbindService(connection);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		startSong();
+		Intent it = new Intent(this, PMDPlayerService.class);
+		if(!bindService(it, connection, Context.BIND_AUTO_CREATE))
+			Log.e(TAG, "Cannot bind to PMD player service");
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 	}
 }

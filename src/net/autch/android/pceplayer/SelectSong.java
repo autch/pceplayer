@@ -8,7 +8,6 @@ import java.util.HashMap;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -30,7 +29,7 @@ public class SelectSong extends ListActivity {
 					if(realTitle == null || realTitle.length() == 0) {
 						realTitle = f.getName();
 					}
-					
+
 					HashMap<String, String> map = new HashMap<String, String>();
 					map.put("filename", f.toString());
 					map.put("title", realTitle);
@@ -44,20 +43,23 @@ public class SelectSong extends ListActivity {
 			}
 		});
 		diver.start();
-		
+
 		SimpleAdapter adapter = new SimpleAdapter(this, files, android.R.layout.simple_list_item_2,
 				new String[] { "title", "title2" }, new int[] { android.R.id.text1, android.R.id.text2 });
 		setListAdapter(adapter);
 	}
-	
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		HashMap<String, String> item = files.get(position);
-		
-		Intent it = new Intent(this, PlayingView.class);
+
+		Intent it = new Intent(this, PMDPlayerService.class);
 		it.putExtra("filename", item.get("filename"));
 		it.putExtra("title", item.get("title"));
 		it.putExtra("title2", item.get("title2"));
+		startService(it);
+
+		it = new Intent(this, PlayingView.class);
 		startActivity(it);
 	}
 }

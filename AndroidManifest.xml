@@ -4,14 +4,14 @@
 	android:versionName="1.0">
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:debuggable="true">
-		<activity android:name=".PlayingView">
-		</activity>
+		<activity android:name=".PlayingView"/>
 		<activity android:label="@string/app_name" android:name=".SelectSong">
 			<intent-filter>
-				<action android:name="android.intent.action.MAIN"></action>
-				<category android:name="android.intent.category.LAUNCHER"></category>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
+		<service android:name=".PMDPlayerService"/>
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 </manifest> 

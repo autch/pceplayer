@@ -1,15 +1,15 @@
 
 #include <stdlib.h>
 #include "ifmuslib.h"
-#include "net_autch_android_pceplayer_PMDPlayerThread.h"
+#include "net_autch_android_pceplayer_MusLibInterface.h"
 
-JNIEXPORT void JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1init
+JNIEXPORT void JNICALL Java_net_autch_android_pceplayer_MusLibInterface_muslib_1init
   (JNIEnv *env, jclass klass)
 {
 	muslib_init();
 }
 
-JNIEXPORT jint JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1load_1from_1file
+JNIEXPORT jint JNICALL Java_net_autch_android_pceplayer_MusLibInterface_muslib_1load_1from_1file
   (JNIEnv *env, jclass klass, jstring jfilename)
 {
 	jint ret = 0;
@@ -23,13 +23,13 @@ JNIEXPORT jint JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1
 	return ret;
 }
 
-JNIEXPORT void JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1start
+JNIEXPORT void JNICALL Java_net_autch_android_pceplayer_MusLibInterface_muslib_1start
   (JNIEnv *env, jclass klass)
 {
 	muslib_start();
 }
 
-JNIEXPORT jint JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1render
+JNIEXPORT jint JNICALL Java_net_autch_android_pceplayer_MusLibInterface_muslib_1render
   (JNIEnv *env, jclass klass, jbyteArray jbuffer, jint size)
 {
 	jbyte* buffer = (*env)->GetByteArrayElements(env, jbuffer, NULL);
@@ -42,7 +42,7 @@ JNIEXPORT jint JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1
 	return ret;
 }
 
-JNIEXPORT void JNICALL Java_net_autch_android_pceplayer_PMDPlayerThread_muslib_1close
+JNIEXPORT void JNICALL Java_net_autch_android_pceplayer_MusLibInterface_muslib_1close
   (JNIEnv *env, jclass klass)
 {
 	muslib_close();
