@@ -4,6 +4,9 @@
 	android:layout_height="fill_parent">
 	<TextView android:text="TextView01" android:id="@+id/TextView01"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
-	<SurfaceView android:id="@+id/surface"
-		android:layout_width="fill_parent" android:layout_height="fill_parent"></SurfaceView>
+	
+<LinearLayout android:id="@+id/LinearLayout01"
+	android:layout_width="wrap_content" android:layout_height="wrap_content">
+	
+</LinearLayout>
 </LinearLayout>

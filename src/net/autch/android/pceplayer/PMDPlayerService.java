@@ -1,6 +1,10 @@
 package net.autch.android.pceplayer;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -16,12 +20,15 @@ public class PMDPlayerService extends Service {
 	private static final int BLOCKS_AT_ONCE = 256;
 	private static final int WAIT_PER_BLOCK = 250;
 
+	private static final int NID_PMD_PLAYING = 0x1;
+
 	private AudioTrack track;
 	private boolean terminate;
 	private final byte[] buffer = new byte[BYTES_PER_BLOCK * BLOCKS_AT_ONCE];
 	private final byte[] empty = new byte[BYTES_PER_BLOCK];
 	private String filename, title, title2;
 	private Thread thread; 
+	private NotificationManager nm;
 
 	// 何度も使いまわす
 	private final Runnable audioStreamer = new Runnable() {
@@ -59,6 +66,7 @@ public class PMDPlayerService extends Service {
 		super.onCreate();
 		setForeground(true);
 		Log.d(TAG, "onCreate()");
+		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		track = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 				AudioFormat.ENCODING_PCM_16BIT,	BYTES_PER_BLOCK * BLOCKS_AT_ONCE, AudioTrack.MODE_STREAM);
@@ -103,6 +111,15 @@ public class PMDPlayerService extends Service {
 
 		thread = new Thread(audioStreamer);
 		thread.start();
+
+		Notification nf = new Notification(R.drawable.piece, title, System.currentTimeMillis());
+		nf.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
+
+		Intent notificationIntent = new Intent(this, SelectSong.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+		nf.setLatestEventInfo(getApplicationContext(), title, title2, contentIntent);
+		nm.notify(NID_PMD_PLAYING, nf);
 	}
 
 	public synchronized void pauseSong() {
@@ -130,6 +147,7 @@ public class PMDPlayerService extends Service {
 		thread = null;
 		track.stop();
 		MusLibInterface.muslib_close();
+		nm.cancel(NID_PMD_PLAYING);
 	}
 
 	public String getFilename() {

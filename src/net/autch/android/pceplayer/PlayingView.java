@@ -8,15 +8,11 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.SurfaceView;
-import android.widget.TextView;
 
 public class PlayingView extends Activity {
 	private static final String TAG = "PlayingView";
 
-	private SurfaceView sv;
 	private PMDPlayerService player;
-
 	private final ServiceConnection connection = new ServiceConnection() {
 		public void onServiceDisconnected(ComponentName name) {
 			Log.d(TAG, "onServiceDisconnected");
@@ -34,8 +30,6 @@ public class PlayingView extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		TextView text = (TextView)findViewById(R.id.TextView01);
-		sv = (SurfaceView)findViewById(R.id.surface);
 		//text.setText(player.getTitle());
 	}
 
