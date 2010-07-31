@@ -42,6 +42,7 @@ public class DirDiver {
 	private void dirDiver(File pivot) {
 		ArrayList<File> dirs = new ArrayList<File>();
 		File[] files = pivot.listFiles(filter);
+		if(files == null) return;
 		Arrays.sort(files);
 		for(File f : files) {
 			if(f.toString().startsWith("."))
