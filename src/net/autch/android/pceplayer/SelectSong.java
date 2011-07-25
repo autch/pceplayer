@@ -87,6 +87,7 @@ public class SelectSong extends ListActivity {
 						SimpleAdapter adapter = new SimpleAdapter(SelectSong.this, files, android.R.layout.simple_list_item_2,
 								new String[] { "title", "title2" }, new int[] { android.R.id.text1, android.R.id.text2 });
 						setListAdapter(adapter);
+						getListView().setFastScrollEnabled(true);
 						dialog.dismiss();
 					}
 				});
