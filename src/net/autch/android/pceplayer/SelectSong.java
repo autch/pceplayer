@@ -70,6 +70,7 @@ public class SelectSong extends ListActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		final SelectSong me = this;
 		super.onCreate(savedInstanceState);
 
 		files.clear();
@@ -88,6 +89,7 @@ public class SelectSong extends ListActivity {
 								new String[] { "title", "title2" }, new int[] { android.R.id.text1, android.R.id.text2 });
 						setListAdapter(adapter);
 						getListView().setFastScrollEnabled(true);
+						getListView().getParent().requestLayout();
 						dialog.dismiss();
 					}
 				});

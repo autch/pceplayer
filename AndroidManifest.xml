@@ -13,5 +13,5 @@
 		</activity>
 		<service android:name=".PMDPlayerService"/>
 	</application>
-	<uses-sdk android:minSdkVersion="3" />
+	<uses-sdk android:minSdkVersion="7" />
 </manifest> 
