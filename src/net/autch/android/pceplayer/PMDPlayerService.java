@@ -17,14 +17,14 @@ public class PMDPlayerService extends Service {
 	private static final String TAG = "PMDPlayerService";
 
 	private static final int BYTES_PER_BLOCK = 128 * 2;
-	private static final int BLOCKS_AT_ONCE = 256;
-	private static final int WAIT_PER_BLOCK = 250;
+	private static final int TRACK_BUFFER_SIZE = BYTES_PER_BLOCK * 375; // 128 * 375 = 48000
+	private static final int WAIT_PER_BLOCK = 0;
 
 	private static final int NID_PMD_PLAYING = 0x1;
 
 	private AudioTrack track;
 	private boolean terminate;
-	private final byte[] buffer = new byte[BYTES_PER_BLOCK * BLOCKS_AT_ONCE];
+	private final byte[] buffer = new byte[BYTES_PER_BLOCK * 256];
 	private final byte[] empty = new byte[BYTES_PER_BLOCK];
 	private String filename, title, title2;
 	private Thread thread; 
@@ -68,8 +68,8 @@ public class PMDPlayerService extends Service {
 		Log.d(TAG, "onCreate()");
 		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		track = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_CONFIGURATION_MONO,
-				AudioFormat.ENCODING_PCM_16BIT,	BYTES_PER_BLOCK * BLOCKS_AT_ONCE, AudioTrack.MODE_STREAM);
+		track = new AudioTrack(AudioManager.STREAM_MUSIC, 48000, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+				AudioFormat.ENCODING_PCM_16BIT,	TRACK_BUFFER_SIZE, AudioTrack.MODE_STREAM);
 		terminate = false;
 		thread = null;
 		MusLibInterface.muslib_init();
