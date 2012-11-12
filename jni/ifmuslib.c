@@ -9,7 +9,7 @@
 
 // muslib の仕様によって定まる、一度に render() 出来るバッファサイズ
 #define RENDER_UNIT (128 * sizeof(signed short))
-#define SAMPLING_FREQ	(44100)
+#define SAMPLING_FREQ	(48000)
 
 volatile PCEWAVEINFO *pWave; // 唯一のインスタンス
 long FS, FS2, MCOUNT, FOFS;	 // Yui: musdef.h から移してきたグローバル変数
@@ -52,19 +52,19 @@ void muslib_start()
 		return;
 
 	// SK : muslib の可変周波数化に伴う、各種グローバル変数の初期化
-	FS = 44100 << 1;
+	FS = 48000 << 1;
 	FS2 = FS >> 1;
 
 	//MCOUNT
 	//(long)(FS2/128.0*2.5*16.0+0.5) == (long)((FS2*40)/128+0.5) == (long)(FS2*40.0+64.0)/128.0)
 	//(FS2*40+64)/128
 	//MCOUNT = (FS2 * 40 + 64) >> 7;				// yui: 組み込み実数演算を利用
-	MCOUNT = 13781;
+	MCOUNT = 15000;
 
 	//FOFS = (long)(auLog(FS2) / auLog(2.0) * 12.0 * 256.0 + 0.5)
 	//     ==(long)(3072*auLog(FS2)/auLog(2.0)+1/2);
 	//FOFS = (long)(3072.0 * log((double)FS2) / log(2.0) + 0.5);
-	FOFS = 47396;
+	FOFS = 47772;
 
 	VOLS = 1;
 
@@ -78,7 +78,7 @@ void muslib_start()
 	// X / (fs2 / 16k) = (X / 1) / (fs2 / 16k) = 16k * x / fs2 * 1
 	//ENVRR = (double)(4000 << VOLS) / ((double)FS2 / 16000.0);
 	//ENVRR = MulDiv(4000 << VOLS, 16000, FS2);
-	ENVRR = 2902;
+	ENVRR = 2666;
 	// SK : ここまで
 
 	// yui: 曲の再生時に detune と vibrato の初期化をする

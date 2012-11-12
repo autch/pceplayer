@@ -10,5 +10,6 @@ MY_MUSLIB_SRC := muslib/exp12.c muslib/instdef.c muslib/mus.c muslib/seq.c musli
 LOCAL_MODULE    := muslib
 LOCAL_SRC_FILES := jni.c ifmuslib.c $(MY_WAVE_SRC) $(MY_MUSLIB_SRC)
 LOCAL_CFLAGS    += -I$(LOCAL_PATH)/muslib -I.. 
+LOCAL_ARM_MODE	:= arm
 
 include $(BUILD_SHARED_LIBRARY)
