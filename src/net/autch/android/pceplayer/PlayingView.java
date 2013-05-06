@@ -13,17 +13,6 @@ public class PlayingView extends Activity {
 	private static final String TAG = "PlayingView";
 
 	private PMDPlayerService player;
-	private final ServiceConnection connection = new ServiceConnection() {
-		public void onServiceDisconnected(ComponentName name) {
-			Log.d(TAG, "onServiceDisconnected");
-			player = null;
-		}
-
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			Log.d(TAG, "onServiceConnected");
-			player = ((PMDPlayerService.PMDPlayerServiceBinder)service).getService();
-		}
-	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +25,11 @@ public class PlayingView extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		unbindService(connection);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Intent it = new Intent(this, PMDPlayerService.class);
-		if(!bindService(it, connection, Context.BIND_AUTO_CREATE))
-			Log.e(TAG, "Cannot bind to PMD player service");
-
 	}
 
 	@Override

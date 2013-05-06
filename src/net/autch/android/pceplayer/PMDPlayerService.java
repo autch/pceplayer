@@ -16,19 +16,23 @@ import android.util.Log;
 public class PMDPlayerService extends Service {
 	private static final String TAG = "PMDPlayerService";
 
+	public static final String ACTION_PLAY = "net.autch.android.pceplayer.ACTION_PLAY";
+	public static final String ACTION_PAUSE = "net.autch.android.pceplayer.ACTION_PAUSE";
+	public static final String ACTION_RESUME = "net.autch.android.pceplayer.ACTION_RESUME";
+	public static final String ACTION_STOP = "net.autch.android.pceplayer.ACTION_STOP";
+	
 	private static final int BYTES_PER_BLOCK = 128 * 2;
-	private static final int TRACK_BUFFER_SIZE = BYTES_PER_BLOCK * 375; // 128 * 375 = 48000
+	private static final int TRACK_BUFFER_SIZE = BYTES_PER_BLOCK * 256; // 128 * 375 = 48000
 	private static final int WAIT_PER_BLOCK = 0;
 
 	private static final int NID_PMD_PLAYING = 0x1;
 
 	private AudioTrack track;
 	private boolean terminate;
-	private final byte[] buffer = new byte[BYTES_PER_BLOCK * 256];
+	private final byte[] buffer = new byte[BYTES_PER_BLOCK * 128];
 	private final byte[] empty = new byte[BYTES_PER_BLOCK];
 	private String filename, title, title2;
 	private Thread thread; 
-	private NotificationManager nm;
 
 	// 何度も使いまわす
 	private final Runnable audioStreamer = new Runnable() {
@@ -50,23 +54,10 @@ public class PMDPlayerService extends Service {
 		}
 	};
 
-	public class PMDPlayerServiceBinder extends Binder {
-		public PMDPlayerService getService() {
-			return PMDPlayerService.this;
-		}
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		return new PMDPlayerServiceBinder();
-	}
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		setForeground(true);
 		Log.d(TAG, "onCreate()");
-		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		track = new AudioTrack(AudioManager.STREAM_MUSIC, 48000, AudioFormat.CHANNEL_CONFIGURATION_MONO,
 				AudioFormat.ENCODING_PCM_16BIT,	TRACK_BUFFER_SIZE, AudioTrack.MODE_STREAM);
@@ -85,14 +76,24 @@ public class PMDPlayerService extends Service {
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
-
-		filename = intent.getStringExtra("filename");
-		title = intent.getStringExtra("title");
-		title2 = intent.getStringExtra("title2");
-		Log.d(TAG, "onStart(): " + filename);
-		startSong(filename);
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		super.onStartCommand(intent, flags, startId);
+		String action = intent.getAction();
+		
+		if(action.equals(ACTION_PLAY)) {
+			filename = intent.getStringExtra("filename");
+			title = intent.getStringExtra("title");
+			title2 = intent.getStringExtra("title2");
+			Log.d(TAG, "onStart(): " + filename);
+			startSong(filename);
+		} else if(action.equals(ACTION_PAUSE)) {
+			pauseSong();
+		} else if(action.equals(ACTION_RESUME)) {
+			resumeSong();
+		} else if(action.equals(ACTION_STOP)) {
+			stopSong();
+		}
+		return START_STICKY;
 	}
 
 	public synchronized void startSong(String filename) {
@@ -119,7 +120,7 @@ public class PMDPlayerService extends Service {
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		nf.setLatestEventInfo(getApplicationContext(), title, title2, contentIntent);
-		nm.notify(NID_PMD_PLAYING, nf);
+		startForeground(NID_PMD_PLAYING, nf);
 	}
 
 	public synchronized void pauseSong() {
@@ -149,7 +150,7 @@ public class PMDPlayerService extends Service {
 		thread = null;
 		track.stop();
 		MusLibInterface.muslib_close();
-		nm.cancel(NID_PMD_PLAYING);
+		stopForeground(true);
 	}
 
 	public String getFilename() {
@@ -170,5 +171,11 @@ public class PMDPlayerService extends Service {
 		long pos = track.getPlaybackHeadPosition();
 		pos /= 44100;
 		return (int)pos;
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
 	}
 }

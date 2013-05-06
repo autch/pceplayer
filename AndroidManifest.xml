@@ -11,7 +11,14 @@
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
-		<service android:name=".PMDPlayerService"/>
+		<service android:name=".PMDPlayerService">
+		    <intent-filter>
+		        <action android:name="net.autch.android.pceplayer.ACTION_PLAY"/>
+		        <action android:name="net.autch.android.pceplayer.ACTION_PAUSE"/>
+   		        <action android:name="net.autch.android.pceplayer.ACTION_RESUME"/>
+   		        <action android:name="net.autch.android.pceplayer.ACTION_STOP"/>
+		    </intent-filter>
+		</service>
 	</application>
-	<uses-sdk android:minSdkVersion="7" />
+	<uses-sdk android:minSdkVersion="11" android:targetSdkVersion="14" />
 </manifest> 
